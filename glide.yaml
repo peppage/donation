@@ -1,0 +1,5 @@
+package: pray
+import:
+- package: github.com/kataras/iris
+- package: github.com/pelletier/go-toml
+- package: github.com/stripe/stripe-go

@@ -1,0 +1,63 @@
+{% code
+    type RootPage struct {
+        BasePage
+    }
+%}
+{% func (p *RootPage) Title() %}{% endfunc %}
+{% func (p *RootPage) Body() %}
+<h1>Make a donation</h1>
+<p>Thanks for your donation</p>
+
+<form action="" method="POST" id="payment-form">
+    <span class="payment-errors"></span>
+    <label>Credit Card Number</label><br>
+    <input type="text" autocomplete="cc-number" inputmode="numeric" size="20" data-stripe="number"><br>
+    
+    <label>
+      <span>Expiration (MM/YY)</span>
+      <input type="text" size="2" data-stripe="exp_month">
+    </label>
+    <span> / </span>
+    <input type="text" size="2" data-stripe="exp_year">
+    <br>
+    
+    <label>CVC</label><br>
+    <input type="text" size="4" data-stripe="cvc"><br>
+    
+    <label>Billing Zip</label><br>
+    <input type="text" size="6" data-strip="address_zip"><br>
+    
+    <label>Amount</label><br>
+    <input type="text" name="amount"><br>
+
+    <label>Message</label><br>
+    <textarea name="message"></textarea><br>
+    
+    <input type="submit" class="submit" value="Submit Payment">
+</form>
+
+<script>
+    var form = document.querySelector('#payment-form');
+    form.onsubmit = function formSubmit(e) {
+        form.querySelector('.submit').setAttribute('disabled', true);
+        Stripe.card.createToken(form, stripeResponseHandler);
+        return false;
+    }
+    
+    function stripeResponseHandler(status, response) {
+        var form = document.querySelector('#payment-form');
+        if(response.error) {
+            form.querySelector('.payment-errors').innerText = response.error.message;
+            form.querySelector('.submit').removeAttribute('disabled')
+        } else {
+            var token = response.id;
+            var i = document.createElement('input');
+            i.setAttribute('type', 'hidden');
+            i.setAttribute('name', 'stripeToken');
+            i.setAttribute('value', token);
+            form.appendChild(i)
+            form.submit();
+        }
+    }
+</script>
+{% endfunc %}
